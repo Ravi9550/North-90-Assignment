@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Signup</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/login.css' %}" />
+  </head>
+  <body>
+    <div class="form-container">
+      <h2>Create an Account</h2>
+      <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="id_username">Username</label>
+          <input
+            type="text"
+            name="username"
+            maxlength="150"
+            autocapitalize="none"
+            autocomplete="username"
+            autofocus
+            required
+            id="id_username"
+            placeholder="Enter your username"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="id_password1">Password</label>
+          <input
+            type="password"
+            name="password1"
+            autocomplete="new-password"
+            required
+            id="id_password1"
+            placeholder="Enter your password"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="id_password2">Confirm Password</label>
+          <input
+            type="password"
+            name="password2"
+            autocomplete="new-password"
+            required
+            id="id_password2"
+            placeholder="Confirm your password"
+          />
+        </div>
+
+        <button type="submit" class="btn-submit">Sign Up</button>
+      </form>
+      <div class="form-footer">
+        Already have an account? <a href="{% url 'login' %}">Login here</a>
+      </div>
+    </div>
+  </body>
+</html>

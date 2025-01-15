@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Chat Home</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/chat_home.css' %}" />
+    <script src="./static/js/script.js"></script>
+   
+  </head>
+  <body>
+    <div class="navbar">
+      <div class="nav-left">
+        <button id="toggleMenuBtn" class="hamburger-menu">
+          <span class="line"></span>
+          <span class="line"></span>
+          <span class="line"></span>
+        </button>
+        <a href="#">Home</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+      </div>
+      <h1>My Chat App</h1>
+      <div class="nav-right">
+        <div class="dropdown">
+          <button class="dropdown-btn">
+            <div class="profile-icon">
+              {% if request.user.profile_picture %}
+              <img
+                src="{{ request.user.profile_picture.url }}"
+                alt="Profile"
+                class="profile-img"
+              />
+              {% else %}
+              <span class="profile-initials"
+                >{{ request.user.username|slice:":1" }}</span
+              >
+              {% endif %}
+            </div>
+          </button>
+          <div class="dropdown-content">
+            <a href="{% url 'profile' %}">Profile</a>
+            <form method="POST" action="{% url 'logout' %}">
+              {% csrf_token %}
+              <button type="submit" class="logout-btn">Logout</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="layout">
+      <div class="left-menu" id="leftMenu">
+        <h3>All Users</h3>
+        <ul>
+          {% for u in all_users %}
+          <li>
+            <a
+              href="#"
+              class="user-link"
+              data-username="{{u.username}}"
+              onclick="selectUser(this)"
+            >
+              {{ u.username }}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="main-content">
+        <div class="chat-header">
+          <h2 id="chatWithTitle">Select a user to chat with</h2>
+        </div>
+        <div class="chat-messages" id="messagesContainer"></div>
+        <div class="input-area">
+          <textarea
+            id="messageInput"
+            placeholder="Type a message..."
+          ></textarea>
+          <button id="sendBtn">Send</button>
+        </div>
+      </div>
+      <div class="right-panel" id="rightPanel">
+        <h3>Notifications</h3>
+        <ul id="notificationList"></ul>
+      </div>
+    </div>
+    <div class="footer">&copy; 2025 My Chat App</div>
+
+    
+    <script>
+      function selectUser(linkElement) {
+        const allLinks = document.querySelectorAll(".user-link");
+        allLinks.forEach((link) => link.classList.remove("active"));
+        linkElement.classList.add("active");
+      }
+      document.addEventListener("DOMContentLoaded", () => {
+        const leftMenu = document.getElementById("leftMenu");
+        const toggleMenuBtn = document.getElementById("toggleMenuBtn");
+        const messagesContainer = document.getElementById("messagesContainer");
+        const messageInput = document.getElementById("messageInput");
+        const sendBtn = document.getElementById("sendBtn");
+        const chatWithTitle = document.getElementById("chatWithTitle");
+        let chatSocket = null;
+        let currentUser = null;
+        toggleMenuBtn.addEventListener("click", () => {
+          leftMenu.classList.toggle("collapsed");
+        });
+        document.querySelectorAll(".user-link").forEach((link) => {
+          link.addEventListener("click", (e) => {
+            e.preventDefault();
+            const username = link.getAttribute("data-username");
+            if (username) {
+              openChatWith(username);
+            }
+          });
+        });
+        function openChatWith(username) {
+          currentUser = username;
+          chatWithTitle.textContent = `Chat with ${username}`;
+          if (chatSocket) {
+            chatSocket.close();
+          }
+          messagesContainer.innerHTML = "";
+          fetchOldMessages(username);
+          chatSocket = new WebSocket(
+            "ws://" + window.location.host + "/ws/chat/" + username + "/"
+          );
+          chatSocket.onmessage = function (e) {
+            const data = JSON.parse(e.data);
+            const message = data.message;
+            const sender = data.sender;
+            addMessage(sender, message);
+          };
+          chatSocket.onclose = function (e) {
+            console.log("WebSocket closed");
+          };
+        }
+        sendBtn.addEventListener("click", () => {
+          const msg = messageInput.value.trim();
+          if (msg && chatSocket) {
+            chatSocket.send(
+              JSON.stringify({
+                message: msg,
+              })
+            );
+            messageInput.value = "";
+          }
+        });
+        messageInput.addEventListener("keypress", (e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            sendBtn.click();
+          }
+        });
+        function addMessage(sender, text) {
+          const msgDiv = document.createElement("div");
+          const senderDiv = document.createElement("div");
+          const textDiv = document.createElement("div");
+
+          senderDiv.className = "sender-name";
+          senderDiv.textContent = sender;
+
+          textDiv.className = "message-text";
+          textDiv.textContent = text;
+
+          if (sender === "{{ request.user.username }}") {
+            msgDiv.className = "message sent";
+          } else {
+            msgDiv.className = "message received";
+          }
+
+          msgDiv.appendChild(senderDiv);
+          msgDiv.appendChild(textDiv);
+
+          messagesContainer.appendChild(msgDiv);
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function fetchOldMessages(username) {
+          fetch(`/chat/get_old_messages/${username}/`)
+            .then((response) => response.json())
+            .then((data) => {
+              data.forEach((msg) => {
+                addMessage(msg.sender, msg.content);
+              });
+            })
+            .catch((err) => console.error(err));
+        }
+      });
+    </script>
+  </body>
+</html>
