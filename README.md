@@ -72,6 +72,13 @@ This project consists of a full-stack web application built with **Django**, **J
 - **Cloud Services:** AWS Lambda, S3
 - **Version Control:** Git, GitHub
 
+## Screenshots
+![registration](https://github.com/user-attachments/assets/eac8f050-0f5d-4155-b0bd-18e17cf55baa)
+![login](https://github.com/user-attachments/assets/b7aae308-0331-4319-b4a1-235cc7b7200a)
+![home](https://github.com/user-attachments/assets/1f7a579b-c01d-4236-aa98-45c6913f0592)
+![home2](https://github.com/user-attachments/assets/f1ed8d2e-2bb5-4284-b1eb-ef4d94505656)
+
+
 ## Setup Instructions
 
 1. **Clone the repository**
