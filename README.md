@@ -65,22 +65,55 @@ This project consists of a full-stack web application built with **Django**, **J
    - An AWS Lambda function to upload documents or PDFs to an S3 bucket for storage.
 
 ## Technologies Used:
-- **Frontend:** HTML, CSS, JavaScript (Vanilla JS)
+- **Frontend:** HTML, CSS, JavaScript 
 - **Backend:** Django (Python)
-- **Database:** SQLite (for local development), PostgreSQL (for production)
+- **Database:** SQLite 
 - **WebSockets:** Django Channels
 - **Cloud Services:** AWS Lambda, S3
 - **Version Control:** Git, GitHub
 
-## Setup Instructions:
+## Setup Instructions
 
-### Prerequisites:
-1. Python 3.x installed.
-2. Node.js and npm installed for frontend development.
-3. AWS account with Lambda and S3 permissions set up.
-
-### Setting Up the Django Application:
-1. **Clone the repository:**
+1. **Clone the repository**
    ```bash
    git clone https://github.com/Ravi9550/North-90-Assignment.git
+   ```
+2. **Go to the folder**
+   ```bash
+    cd ChatProject
+3. **Create a virtual environment**
+   ```bash
+   python3 -m venv venv
+3. **Activate the virtual environment**
+
+   - For Linux/macOS
+     ```bash
+     source venv/bin/activate
+     ```
+  
+   - For Windows
+     ```bash
+     venv\Scripts\activate
+4. **Install required dependencies**
+   ```bash
+   pip install -r requirements.txt
+5. **Create Django project**
+   ```bash
+   django-admin startproject chatproject
+   ```
+6. **Go to project folder**
+   ```bash
+    cd fintrack
+7. **Create a Django app**
+   ```bash
+   django-admin startapp chatapp
+8. **Apply database migrations**
+   ```bash
+   python manage.py migrate
+9. **Create a superuser**(for admin access)
+    ```bash
+    python manage.py createsuperuser
+10. **Run the development server**
+    ```bash
+    python manage.py runserver
    
