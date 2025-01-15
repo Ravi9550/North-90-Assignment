@@ -7,6 +7,6 @@ urlpatterns = [
     path('signup/', views.registerview, name='signup'),
     path('', views.loginview, name='login'),
     path('logout/', views.logoutview, name='logout'),
-    path('get_old_messages/<str:username>/', views.get_old_messages, name='get_old_messages'),
+    path('chat/get_old_messages/<str:username>/', views.get_old_messages, name='get_old_messages'),
 
 ]
